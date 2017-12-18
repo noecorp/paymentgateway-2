@@ -18,5 +18,9 @@
     "laravel-mix": "0.*",
     "lodash": "^4.17.4",
     "vue": "^2.1.10"
+  },
+  "dependencies": {
+    "chart.js": "^2.7.0",
+    "vue-js-modal": "^1.2.11"
   }
 }

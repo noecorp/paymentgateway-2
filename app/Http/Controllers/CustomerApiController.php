@@ -10,6 +10,19 @@ use App\User;
 use App\Mobileaccount;
 use App\Transaction;
 use App\Bankaccount;
+use App\Customer;
+use App\Hash;
+use App\HashBankAccount;
+use App\HashMobileAccount;
+use App\Item;
+use App\Subscription;
+use App\UserBankAccount;
+use App\UserCreditTransaction;
+use App\UserDebitTransaction;
+use App\UserMobileAccount;
+use App\HashCreditTransaction;
+
+
 class CustomerApiController extends Controller
 {
     //
@@ -58,9 +71,134 @@ class CustomerApiController extends Controller
 	return $xml;
 
 	}
+	public function isCustomer($firstname,$secondname,$lastname,$accountnumber,$accounttype,$clientid){
+		error_log("check customer");
+		
+		$customer=Customer::where("firstname",strtolower($firstname))->where("secondname",strtolower($secondname))->where("lastname",strtolower($lastname))->where("accountnumber",$accountnumber)->where("accounttype",strtolower($accounttype))->where("clientid",$clientid)->get();
+		return empty($customer);
+		
+	}
+	public function registerCustomer($firstname,$secondname,$lastname,$accountnumber,$companyname,$clientid){
+		
+		if(!$this->isCustomer($firstname,$secondname,$lastname,$accountnumber,$companyname,$clientid)){
+			error_log("registering customer");
+			$customer = new Customer;
+			$customer->firstname = strtolower($firstname);
+			$customer->secondname = strtolower($secondname);
+			$customer->lastname = strtolower($lastname);
+			// account number has to be unique
+			$customer->accountnumber = $accountnumber;
 
-    public function customerPay(Request $request){
-    	$respotext="error";
+			$customer->accounttype = strtolower($companyname);
+			// account type here implie compnay name eg mpesa,crdb
+			$customer->clientid = $clientid;
+
+			$clientrow = DB::table('oauth_clients')->where('id',$clientid)->first();
+
+			$customer->userid =$clientrow->user_id;
+
+			$customer->save();
+
+			error_log("customer registered id:="+$customer->id);
+			return $customer;
+		}else{
+			error_log("customer present");
+			 $customer=Customer::where("firstname",strtolower($firstname))->where("secondname",strtolower($secondname))->where("lastname",strtolower($lastname))->where("accountnumber",$accountnumber)->where("accounttype",strtolower($companyname))->where("clientid",$clientid)->first();
+			 return $customer;
+		}
+		 
+
+	}
+	public function getAcountToReceivePayment($accounttype,$clientid,$companyname){
+		error_log("find account receiver");
+		$clientrow = DB::table('oauth_clients')->where('id',$clientid)->first();
+		$user= User::where("id",$clientrow->user_id)->first();
+		$account = array();
+		if($user->accountpriorityusage=="custom"){
+			if($accounttype=="mobile"){
+		$maxval=UserMobileAccount::where("userid",$clientrow->user_id)->max("custom");
+		$account=UserMobileAccount::where("userid",$clientrow->user_id)->where("custom",$maxval)->first();
+			}else if($accounttype=="bank"){
+		$maxval=UserBankAccount::where("userid",$clientrow->user_id)->max("custom");
+		$account=UserBankAccount::where("userid",$clientrow->user_id)->where("custom",$maxval)->first();
+			}
+		}else if($user->accountpriorityusage=="client"){
+			if($accounttype=="mobile"){
+		$account=UserMobileAccount::where("userid",$clientrow->user_id)->where("client",$clientrow->name)->first();
+			}else if($accounttype=="bank"){
+		$account=UserBankAccount::where("userid",$clientrow->user_id)->where("client",$clientrow->name)->first();
+			}
+
+		}else if($user->accountpriorityusage=="type"){
+			if($accounttype=="mobile"){
+		$account=UserMobileAccount::where("userid",$clientrow->user_id)->where("companyname",$companyname)->first();
+			}else if($accounttype=="bank"){
+		$account=UserBankAccount::where("userid",$clientrow->user_id)->where("bankname",$companyname)->first();	
+			}
+
+		}
+		error_log("account reeiver found:id="+$maxval);
+		return $account;
+	}
+	public function payHash(){
+		// if hash payment via api is successfull
+		return true;
+	}
+	public function payUser(){
+		// if user payment via api is successfull
+		return true;
+	}
+	public function logUserCreditTransaction($receiveraccount,$amount,$description,$customer,$accounttype){
+		error_log("log transactions3");
+
+		$hashamount=(2*$amount)/100;
+		$useramount=$amount-$hashamount;
+
+		$usercredittransaction= new UserCreditTransaction;
+		error_log($receiveraccount->id);
+		$usercredittransaction->customerid=$customer->id;
+		$usercredittransaction->receiveaccountid=$receiveraccount->id;
+		$usercredittransaction->amount=$useramount;
+		$usercredittransaction->description=$description;
+		$usercredittransaction->userid=$customer->userid;
+		$usercredittransaction->accountreceivetype=$accounttype;
+
+		$usercredittransaction->save();
+
+		$hashcredittransaction= new HashCreditTransaction;
+
+		// $hash=Hash::orderBy('id', 'desc')->first();
+		
+		// should be hash->id 
+		$hashcredittransaction->hashid=1;
+		$hashcredittransaction->transactionidfrom=$usercredittransaction->id;
+		$hashcredittransaction->transactiontablefrom="usercredittransactions";
+		$hashcredittransaction->amount=$hashamount;
+		$hashcredittransaction->accountreceivetype=$accounttype;
+		$hashcredittransaction->save();
+
+	}
+	public function logUserDebitTransaction(){
+
+	}
+
+	public function customerPay(Request $request){
+		error_log("new server hit");
+		$customer=$this->registerCustomer($request->get("firstname"),$request->get("secondname"),$request->get("lastname"),$request->get("accountnumber"),$request->get("companyname"),$request->get("clientid"));
+		error_log("customer created");
+		$account=$this->getAcountToReceivePayment($request->get("accounttype"),$request->get("clientid"),$request->get("companyname"));
+		error_log("account acquired");
+		// pay user and hash
+
+		// the log the transaction
+		$this->logUserCreditTransaction($account,(float)$request->get("amount"),$request->get("description"),$customer,$request->get("accounttype"));
+		error_log("transaction loged");
+		return Response::json("success");
+
+	}
+
+    public function oldcustomerPay(Request $request){
+    	 $respotext="error";
     	 error_log("server hit");
     	if($this->phoneParse($request->get("phonenumber"))!="invalid"){
     	$transaction= new Transaction;
@@ -97,9 +235,6 @@ class CustomerApiController extends Controller
 
 // end modification
 
-
-
-
         $transaction->userid=$userid->user_id;
         $transaction->payeeaccounttype="Mobile";
         $mobile=Mobileaccount::orderBy("id","desc")->first();
@@ -112,6 +247,37 @@ class CustomerApiController extends Controller
         return Response::json($respotext);
 
     }
+    public function OTPResponseControl(){
+
+    }
+    public function customerPayment(){
+
+    	//find appropriate account to credit the user 
+    	// also find appropriate account to credit hash
+    	// do the neccessary math and then update the respective accounts
+
+    	// send back a response for confirmation of the transaction
+    }
+    public function customerRollbackPayment(){
+
+    	
+    }
+
+    public function customerSubscribe(){
+
+    }
+    public function customerEndSubscription(){
+
+    }
+
+    public function customerTransferCash(){
+
+    }
+
+	public function customerRollbackTransfer(){
+
+
+	}    
 
     public function phoneParse($phone){
     	if(strpos($phone, "+255")){

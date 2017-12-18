@@ -4,9 +4,9 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
+// import VModal from 'vue-js-modal';
 require('./bootstrap');
-
+// Vue.use(VModal);
 window.Vue = require('vue');
 
 /**
@@ -18,7 +18,7 @@ window.Vue = require('vue');
 Vue.component('example', require('./components/Example.vue'));
 Vue.component('mobile-money', require('./components/account/mobile.vue'));
 Vue.component('transaction-money', require('./components/account/transaction.vue'));
-
+Vue.component('subscription-money', require('./components/account/subscription.vue'));
 
 Vue.component(
     'passport-clients',

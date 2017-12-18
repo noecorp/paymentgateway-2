@@ -1,0 +1,45 @@
+div.credentialform{
+  display:none;
+  position:absolute;
+  background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left,rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Safari 5.1-6*/
+  background: -o-linear-gradient(right,rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Opera 11.1-12*/
+  background: -moz-linear-gradient(right,rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Fx 3.6-15*/
+  background: linear-gradient(to right, rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Standard*/
+  box-shadow: 0px 9px 16px 0px rgba(0,0,0,0,2);
+  padding:12px 16px;
+ z-index:1;}
+/*.credentialbutton:hover .credentialform{
+  display: block;
+}*/
+    body {
+    background-image: url("images/background/bluenew.jpg");
+    background-color: #cccccc;
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-attachment: fixed;
+}
+.componentfloat{  
+    position: relative;
+    display: inline-block;
+    /* background-color: #1fdbe5;*/
+       background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left,rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Safari 5.1-6*/
+  background: -o-linear-gradient(right,rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Opera 11.1-12*/
+  background: -moz-linear-gradient(right,rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Fx 3.6-15*/
+  background: linear-gradient(to right, rgba(31, 219, 229, 0),rgba(31, 219, 229, 1)); /*Standard*/
+    /*min-width: 100%;*/
+/*    min-height: 100px;
+
+*/  
+    /*not good way to limit size, figure out a more dynamic approach later*/
+    height: 370px;
+    max-height: 400px;
+    /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    */
+    box-shadow: 10px 10px 5px #888888;
+    /*padding: 12px 16px;*/
+    margin-bottom:20px;
+/*    margin-right: 2px; 
+*/    /*z-index: 0;
+*/}

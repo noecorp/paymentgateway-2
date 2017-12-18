@@ -16,12 +16,18 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+   
+<!--          <link href="{{ asset('css/home.css') }}" rel="stylesheet">
+ -->   
+    
+        <link href="{{ asset('css/theme1.css') }}" rel="stylesheet">
+   
     
 <body>
 </head>
 <body>
-    <div id="app">
-        <nav class="navbar navbar-default navbar-static-top">
+    <div id="app" >
+        <nav class="navbar navbar-default navbar-static-top" style="position:fixed;min-width: 100%;">
             <div class="container">
                 <div class="navbar-header">
 
@@ -34,11 +40,14 @@
                     </button>
 
                     <!-- Branding Image -->
-                    <a class="navbar-brand" href="{{ url('/') }}">
+                    <a  class="navbar-brand" href="{{ url('/') }}">
                         {{ config('HAsh', 'HAsh') }}
                     
                     </a>
+                    <div id="credentialbutton" class="credentialbutton btn btn-default btn-sm" style="margin-top:10px; box-shadow: 0px 2px 5px #888888; width:80px" >Credentials</div>
+
                 </div>
+
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
@@ -78,6 +87,24 @@
                     </ul>
                 </div>
             </div>
+            <div class="credentialform">
+                <form>
+    <div class="form-group">
+    <label for="pwd">Bussiness Name</label>
+    <input type="text" class="form-control" id="Bname" placeholder="bussiness licence">
+  </div>
+
+  <div class="form-group">
+    <label for="tin">Bussinesss Tax No</label>
+    <input type="text" class="form-control" id="tin" placeholder="bussiness tax payer's no.">
+  </div>
+  <div class="form-group">
+    <label for="pwd">Bussiness Licence</label>
+    <input type="text" class="form-control" id="licence" placeholder="bussiness licence">
+  </div>
+    <button type="submit" class="btn btn-default">Register</button>
+</form>
+            </div>
         </nav>
 
         @yield('content')
@@ -85,7 +112,21 @@
 
     <!-- Scripts -->
     @yield('script')
-
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#credentialbutton").on("click",function(event){
+                if($(".credentialform").css("display")=="none")
+                $(".credentialform").css("display","block");
+                else
+                 $(".credentialform").css("display","none");   
+            });
+        });
+    </script>
 </body>
 </html>
