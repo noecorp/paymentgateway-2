@@ -179,7 +179,7 @@ return [
 
         Laravel\Passport\PassportServiceProvider::class,
             Nexmo\Laravel\NexmoServiceProvider::class,
-
+        Spatie\Tail\TailServiceProvider::class,
 
     ],
 
